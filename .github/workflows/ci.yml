@@ -1,30 +1,35 @@
-name: CI
+name: componly
 
 on:
+  workflow_dispatch:
+   inputs:
+      commitName:
+        description: 'Custom commit name'
+        required: true
   push:
-  pull_request:
-  schedule:
-    - cron: '0 0 * * *'
+    branches:
+      - main
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x, 19.x]
-
     steps:
-    - uses: actions/checkout@v3
-    - uses: pnpm/action-setup@v2
-      with:
-        version: 6.32.9
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
-    - run: pnpm install
-    - run: pnpm lint
-    - run: pnpm build
+      - name: Checkout repository
+        uses: actions/checkout@v3.5.3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.5.2
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        id: install-dependencies
+        run: yarn install && yarn add @componlyco/cli -D
+      
+      - name: Scan
+        id: componly-scan
+        env:
+          MIN_COVERAGE: 60
+          COMPONLY_CLI_KEY: ZETTP0
+        run: npx componly coverage --design-systems=@componlyco/berkoukes,@mui/material
