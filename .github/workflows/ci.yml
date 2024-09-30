@@ -32,4 +32,4 @@ jobs:
         env:
           MIN_COVERAGE: 60
           COMPONLY_CLI_KEY: ZETTP0
-        run: npx componly coverage --design-systems=@componlyco/berkoukes,@mui/material
+        run: npx componly coverage --design-systems=@fortawesome
